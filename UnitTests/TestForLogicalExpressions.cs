@@ -122,5 +122,191 @@ namespace LogicalInterpreter
                 Assert.AreEqual(false, or.Interpret(new Context(new Dictionary<string, bool>() { { "a", false }, { "b", true } })));
             }
         }
+
+        [TestMethod]
+        public void AndExpressionReturnsFalseWhenBothOperandAreFalse()
+        {
+            {
+                IExpression left = new ConstantTerminalExpression(false);
+                IExpression right = new ConstantTerminalExpression(false);
+                IExpression and = new AndExpression(left, right);
+                Assert.AreEqual(false, and.Interpret(new Context()));
+            }
+            {
+                IExpression left = new VariableTerminalExpression("a");
+                IExpression right = new VariableTerminalExpression("b");
+                IExpression and = new AndExpression(left, right);
+                Assert.AreEqual(false, and.Interpret(new Context(new Dictionary<string, bool>() { { "a", false }, { "b", false } })));
+            }
+            {
+                // false && a => false for a = false
+                IExpression left = new ConstantTerminalExpression(false);
+                IExpression right = new VariableTerminalExpression("a");
+                IExpression and = new AndExpression(left, right);
+                Assert.AreEqual(false, and.Interpret(new Context(new Dictionary<string, bool>() { { "a", false } })));
+            }
+            {
+                // a && !b => false for a = false and b = true
+                IExpression left = new VariableTerminalExpression("a");
+                IExpression right = new NotExpression(new VariableTerminalExpression("b"));
+                IExpression and = new AndExpression(left, right);
+                Assert.AreEqual(false, and.Interpret(new Context(new Dictionary<string, bool>() { { "a", false }, { "b", true } })));
+            }
+        }
+
+        [TestMethod]
+        public void AndExpressionReturnsFalseWhenOneOperandIsFalse()
+        {
+            {
+                IExpression left = new ConstantTerminalExpression(false);
+                IExpression right = new ConstantTerminalExpression(true);
+                IExpression and = new AndExpression(left, right);
+                Assert.AreEqual(false, and.Interpret(new Context()));
+            }
+            {
+                IExpression left = new VariableTerminalExpression("a");
+                IExpression right = new VariableTerminalExpression("b");
+                IExpression and = new AndExpression(left, right);
+                Assert.AreEqual(false, and.Interpret(new Context(new Dictionary<string, bool>() { { "a", false }, { "b", true } })));
+            }
+            {
+                // true && a => false for a = false
+                IExpression left = new ConstantTerminalExpression(true);
+                IExpression right = new VariableTerminalExpression("a");
+                IExpression and = new AndExpression(left, right);
+                Assert.AreEqual(false, and.Interpret(new Context(new Dictionary<string, bool>() { { "a", false } })));
+            }
+            {
+                // a && b => false for a = false and b = true
+                IExpression left = new VariableTerminalExpression("a");
+                IExpression right = new VariableTerminalExpression("b");
+                IExpression and = new AndExpression(left, right);
+                Assert.AreEqual(false, and.Interpret(new Context(new Dictionary<string, bool>() { { "a", false }, { "b", true } })));
+            }
+        }
+
+        [TestMethod]
+        public void AndExpressionReturnsTrueWhenBothOperandAreTrue()
+        {
+            {
+                IExpression left = new ConstantTerminalExpression(true);
+                IExpression right = new ConstantTerminalExpression(true);
+                IExpression and = new AndExpression(left, right);
+                Assert.AreEqual(true, and.Interpret(new Context()));
+            }
+            {
+                IExpression left = new VariableTerminalExpression("a");
+                IExpression right = new VariableTerminalExpression("b");
+                IExpression and = new AndExpression(left, right);
+                Assert.AreEqual(true, and.Interpret(new Context(new Dictionary<string, bool>() { { "a", true }, { "b", true } })));
+            }
+            {
+                // true && a => true for a = true
+                IExpression left = new ConstantTerminalExpression(true);
+                IExpression right = new VariableTerminalExpression("a");
+                IExpression and = new AndExpression(left, right);
+                Assert.AreEqual(true, and.Interpret(new Context(new Dictionary<string, bool>() { { "a", true } })));
+            }
+            {
+                // a && b => true for a = true and b = true
+                IExpression left = new VariableTerminalExpression("a");
+                IExpression right = new VariableTerminalExpression("b");
+                IExpression and = new AndExpression(left, right);
+                Assert.AreEqual(true, and.Interpret(new Context(new Dictionary<string, bool>() { { "a", true }, { "b", true } })));
+            }
+        }
+
+        [TestMethod]
+        public void XorExpressionReturnsFalseWhenBothOperandAreFalse()
+        {
+            {
+                IExpression left = new ConstantTerminalExpression(false);
+                IExpression right = new ConstantTerminalExpression(false);
+                IExpression xor = new XorExpression(left, right);
+                Assert.AreEqual(false, xor.Interpret(new Context()));
+            }
+            {
+                IExpression left = new VariableTerminalExpression("a");
+                IExpression right = new VariableTerminalExpression("b");
+                IExpression xor = new XorExpression(left, right);
+                Assert.AreEqual(false, xor.Interpret(new Context(new Dictionary<string, bool>() { { "a", false }, { "b", false } })));
+            }
+            {
+                // false ^ a => false for a = false
+                IExpression left = new ConstantTerminalExpression(false);
+                IExpression right = new VariableTerminalExpression("a");
+                IExpression xor = new XorExpression(left, right);
+                Assert.AreEqual(false, xor.Interpret(new Context(new Dictionary<string, bool>() { { "a", false } })));
+            }
+            {
+                // a ^ !b => false for a = false and b = true
+                IExpression left = new VariableTerminalExpression("a");
+                IExpression right = new NotExpression(new VariableTerminalExpression("b"));
+                IExpression xor = new XorExpression(left, right);
+                Assert.AreEqual(false, xor.Interpret(new Context(new Dictionary<string, bool>() { { "a", false }, { "b", true } })));
+            }
+        }
+
+        [TestMethod]
+        public void XorExpressionReturnsFalseWhenBothOperandAreTrue()
+        {
+            {
+                IExpression left = new ConstantTerminalExpression(true);
+                IExpression right = new ConstantTerminalExpression(true);
+                IExpression xor = new XorExpression(left, right);
+                Assert.AreEqual(false, xor.Interpret(new Context()));
+            }
+            {
+                IExpression left = new VariableTerminalExpression("a");
+                IExpression right = new VariableTerminalExpression("b");
+                IExpression xor = new XorExpression(left, right);
+                Assert.AreEqual(false, xor.Interpret(new Context(new Dictionary<string, bool>() { { "a", true }, { "b", true } })));
+            }
+            {
+                // true ^ a => false for a = true
+                IExpression left = new ConstantTerminalExpression(true);
+                IExpression right = new VariableTerminalExpression("a");
+                IExpression xor = new XorExpression(left, right);
+                Assert.AreEqual(false, xor.Interpret(new Context(new Dictionary<string, bool>() { { "a", true } })));
+            }
+            {
+                // a ^ !b => false for a = false and b = true
+                IExpression left = new NotExpression(new VariableTerminalExpression("a"));
+                IExpression right = new VariableTerminalExpression("b");
+                IExpression xor = new XorExpression(left, right);
+                Assert.AreEqual(false, xor.Interpret(new Context(new Dictionary<string, bool>() { { "a", false }, { "b", true } })));
+            }
+        }
+
+        [TestMethod]
+        public void XorExpressionReturnsTrueWhenOneOperandIsTrue()
+        {
+            {
+                IExpression left = new ConstantTerminalExpression(false);
+                IExpression right = new ConstantTerminalExpression(true);
+                IExpression xor = new XorExpression(left, right);
+                Assert.AreEqual(true, xor.Interpret(new Context()));
+            }
+            {
+                IExpression left = new VariableTerminalExpression("a");
+                IExpression right = new VariableTerminalExpression("b");
+                IExpression xor = new XorExpression(left, right);
+                Assert.AreEqual(true, xor.Interpret(new Context(new Dictionary<string, bool>() { { "a", true }, { "b", false } })));
+            }
+            {
+                // true ^ a => true for a = false
+                IExpression left = new ConstantTerminalExpression(true);
+                IExpression right = new VariableTerminalExpression("a");
+                IExpression xor = new XorExpression(left, right);
+                Assert.AreEqual(true, xor.Interpret(new Context(new Dictionary<string, bool>() { { "a", false } })));
+            }
+            {
+                // a ^ b => false for a = false and b = true
+                IExpression left = new VariableTerminalExpression("a");
+                IExpression right = new VariableTerminalExpression("b");
+                IExpression xor = new XorExpression(left, right);
+                Assert.AreEqual(true, xor.Interpret(new Context(new Dictionary<string, bool>() { { "a", false }, { "b", true } })));
+            }
+        }
     }
 }
